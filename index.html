@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MoguGrow Catch Game</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Kiwi+Maru:wght@500;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="mobile-container">
+        <!-- Header Bar -->
+        <div id="headerBar" class="game-hud hidden">
+            <div class="hud-profile">
+                <span class="hud-logo">MoguGrow</span>
+            </div>
+            <div class="hud-stats-group">
+                <div class="hud-stat coin-chip">
+                    <img src="img/coin.png" class="hud-stat-img" alt="Coin">
+                    <span id="coinCount" class="stat-num">300</span>
+                </div>
+                <div class="hud-stat gem-chip">
+                    <span>💎</span>
+                    <span id="gemCount" class="stat-num">10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 0. Language Select Screen -->
+        <div id="langScreen" class="content flex-center">
+            <div class="game-card welcome-card">
+                <div class="game-title-badge">
+                    <h1 class="game-logo">MoguGrow</h1>
+                </div>
+                <p class="subtitle">げんごを えらんでね / ဘာသာစကား ရွေးပါ</p>
+
+                <div class="lang-btn-group">
+                    <button class="game-btn btn-primary" onclick="chooseInitialLanguage('ja')">
+                        <span class="flag">🇯🇵</span> にほんご
+                    </button>
+                    <button class="game-btn btn-secondary" onclick="chooseInitialLanguage('my')">
+                        <span class="flag">🇲🇲</span> မြန်မာ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. Character Select Screen -->
+        <div id="selectScreen" class="content hidden select-screen-container">
+            <div class="game-header text-center">
+                <h2 class="game-title-text" data-i18n="charSelectTitle">キャラを えらんでね！</h2>
+            </div>
+            <div class="char-selection" id="charSelectContainer"></div>
+        </div>
+
+        <!-- 2. Home Screen -->
+        <div id="mainScreen" class="content hidden">
+            <div class="pet-stage">
+                <div class="pet-header-pill">
+                    <h3 id="charNameDisplay" class="pet-name">モグちゃん</h3>
+                    <span class="lvl-badge">LV <span id="charLevel">1</span></span>
+                </div>
+                <div class="stage-subtitle" id="charStageTitle">あかちゃん</div>
+
+                <div class="char-avatar-container" onclick="interactCharacter()">
+                    <div class="pet-platform-shadow"></div>
+                    <video id="charAvatarImg" class="char-avatar-img" src="img/moguidle.webm" autoplay loop muted
+                        playsinline preload="auto" aria-label="Pet">
+                    </video>
+                </div>
+            </div>
+
+            <!-- Status Bars -->
+            <div class="hud-panel">
+                <div class="hud-bar-group">
+                    <div class="bar-info">
+                        <span class="icon-label-group">
+                            <img src="img/fullness.png" class="hud-small-icon" alt="Fullness">
+                            <span data-i18n="fullnessLabel">まんぷく</span>
+                        </span>
+                        <span id="fullnessText" class="bar-val">40%</span>
+                    </div>
+                    <div class="bar-track">
+                        <div id="fullnessBar" class="bar-fill fill-fullness"></div>
+                    </div>
+                </div>
+
+                <div class="hud-bar-group">
+                    <div class="bar-info">
+                        <span class="icon-label-group">
+                            <img src="img/level.png" class="hud-small-icon" alt="Level">
+                            <span data-i18n="expLabel">れべる</span>
+                        </span>
+                        <span id="expText" class="bar-val">0 / 100</span>
+                    </div>
+                    <div class="bar-track">
+                        <div id="expBar" class="bar-fill fill-exp"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Panel -->
+            <div class="hud-panel">
+                <h4 class="panel-title" data-i18n="inventoryTitle">🎒 もちもの</h4>
+                <div id="inventoryContainer" class="inventory-grid"></div>
+            </div>
+        </div>
+
+        <!-- 3. Mini Catch Game Screen -->
+        <div id="catchGameScreen" class="content hidden"
+            style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="game-hud" style="position: absolute; top: 0; left: 0; right: 0; z-index: 30;">
+                <button class="game-btn btn-danger" style="width: auto; padding: 4px 10px; font-size: 11px;"
+                    onclick="exitCatchGame()" data-i18n="btnExitGame">🏠 戻る</button>
+                <span class="quiz-step" id="gameScoreText">スコア: 0</span>
+                <span class="quiz-step" id="gameTimerText" style="background: #f43f5e;">30秒</span>
+            </div>
+            <div id="gameCanvasArea" class="catch-canvas-area">
+                <div id="playerBasket" class="catch-player">
+                    <video id="gamePlayerAvatar" class="catch-player-avatar" src="img/moguidle.webm" autoplay loop muted playsinline preload="auto" aria-label="Player"></video>
+                </div>
+            </div>
+            <div class="catch-control-bar">
+                <button class="game-btn btn-secondary" onmousedown="startMoving(-1)" onmouseup="stopMoving()"
+                    onmouseleave="stopMoving()" ontouchstart="startMoving(-1); event.preventDefault();"
+                    ontouchend="stopMoving()">◀️ ひだり</button>
+                <button class="game-btn btn-secondary" onmousedown="startMoving(1)" onmouseup="stopMoving()"
+                    onmouseleave="stopMoving()" ontouchstart="startMoving(1); event.preventDefault();"
+                    ontouchend="stopMoving()">みぎ ▶️</button>
+            </div>
+        </div>
+
+        <!-- 4. Shop Screen -->
+        <div id="shopScreen" class="content hidden">
+            <div class="game-header text-center" style="margin-top: 10px;">
+                <h2 class="game-title-text" data-i18n="shopTitle">🛒 おみせ</h2>
+                <p class="game-sub-text" data-i18n="shopSub">みせを えらんでね！</p>
+            </div>
+
+            <div class="shop-categories">
+                <button class="shop-cat-btn active" onclick="switchShopCategory('veg', this)">🥦<br><span
+                        data-i18n="catVeg">やさい</span></button>
+                <button class="shop-cat-btn" onclick="switchShopCategory('meat', this)">🥩<br><span
+                        data-i18n="catMeat">のおにく</span></button>
+                <button class="shop-cat-btn" onclick="switchShopCategory('snack', this)">🍰<br><span
+                        data-i18n="catSnack">おやつ</span></button>
+                <button class="shop-cat-btn" onclick="switchShopCategory('dairy', this)">🥛<br><span
+                        data-i18n="catDairy">にゅうせいひん</span></button>
+            </div>
+
+            <div class="shop-grid" id="shopContainer"></div>
+        </div>
+
+        <!-- 5. My Page -->
+        <div id="mypageScreen" class="content hidden">
+            <div class="game-header text-center" style="margin-top: 10px;">
+                <h2 class="game-title-text" data-i18n="myPageTitle">📖 じぶんの ぺーじ</h2>
+            </div>
+
+            <div class="hud-panel text-center">
+                <div class="char-avatar-container" style="width: 100px; height: 100px; margin: 0 auto 8px auto;">
+                    <video id="myPageAvatarImg" class="char-avatar-img" src="img/moguidle.webm" autoplay loop muted playsinline preload="auto" aria-label="User Avatar"></video>
+                </div>
+                <h3 id="myPageCharName" style="margin: 0; font-size: 16px; font-weight: 800;">モグちゃん</h3>
+            </div>
+
+            <div class="hud-panel">
+                <h4 class="panel-title" data-i18n="langChangeTitle">🌐 げんご せってい</h4>
+                <div class="lang-toggle-row">
+                    <button class="toggle-btn" onclick="changeLanguage('ja')">🇯🇵 にほんご</button>
+                    <button class="toggle-btn" onclick="changeLanguage('my')">🇲🇲 မြန်မာ</button>
+                </div>
+            </div>
+
+            <div class="hud-panel">
+                <h4 class="panel-title" data-i18n="evoTitle">📈 しんか</h4>
+                <div id="evolutionChain" class="evolution-chain"></div>
+            </div>
+
+            <div class="hud-panel">
+                <h4 class="panel-title" data-i18n="guideTitle">💡 ずかん</h4>
+                <div id="guideContainer"></div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toastNotification" class="toast"></div>
+
+        <!-- Mini Game Entry Confirmation Popup Modal -->
+        <div id="gameEntryModal" class="modal-overlay">
+            <div class="game-modal-card">
+                <div class="modal-result-badge wrong">🎮 ミニゲーム</div>
+                <h3 class="modal-item-title" data-i18n="popupGameTitle">入場料 🪙 100 かかります</h3>
+                <p class="modal-item-desc" data-i18n="popupGameDesc">ゲームを はじめますか？</p>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="game-btn btn-danger" style="flex: 1; padding: 10px;" onclick="closeGameEntryModal()"
+                        data-i18n="btnCancel">やめる ❌</button>
+                    <button class="game-btn btn-success" style="flex: 1; padding: 10px;"
+                        onclick="confirmAndStartCatchGame()" data-i18n="btnStart">はじめる ⭕</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over / Result Modal -->
+        <div id="gameResultModal" class="modal-overlay">
+            <div class="game-modal-card">
+                <div class="modal-result-badge correct">🎉 ゲーム クリア！</div>
+                <h3 id="modalScoreTitle" class="modal-item-title">スコア: 0</h3>
+                <p id="modalRewardDesc" class="modal-item-desc">💎 +2 Diamond ရရှိပါပြီ!</p>
+                <button class="game-btn btn-primary modal-next-btn" onclick="closeGameResultModal()"
+                    data-i18n="btnNext">おうちへもどる ✨</button>
+            </div>
+        </div>
+
+        <!-- Food Info Modal -->
+        <div id="foodInfoModal" class="modal-overlay" onclick="closeFoodModalOnOutside(event)">
+            <div class="game-modal-card">
+                <button class="modal-close-btn" onclick="closeFoodModal()">✖</button>
+                <div class="modal-emoji" id="modalEmoji">🍎</div>
+                <h3 id="modalName" class="modal-item-title">たべもの</h3>
+                <p id="modalDesc" class="modal-item-desc">せつめい</p>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar (Fixed My Page Icon using moguidle.png as fallback) -->
+        <div id="bottomNav" class="game-nav-bar hidden">
+            <button class="game-nav-item active" onclick="switchTab('mainScreen', this)">
+                <img src="img/home.png" class="nav-custom-icon" alt="Home">
+                <span class="nav-text" data-i18n="navHome">おうち</span>
+            </button>
+            <button class="game-nav-item" onclick="openGameEntryModal(this)">
+                <img src="img/quiz.png" class="nav-custom-icon" alt="Game">
+                <span class="nav-text" data-i18n="navMiniGame">ミニゲーム</span>
+            </button>
+            <button class="game-nav-item" onclick="switchTab('shopScreen', this)">
+                <img src="img/shop.png" class="nav-custom-icon" alt="Shop">
+                <span class="nav-text" data-i18n="navShop">おみせ</span>
+            </button>
+            <button class="game-nav-item" onclick="switchTab('mypageScreen', this)">
+                <img id="navMyPageImg" src="img/moguidle.png" class="nav-custom-icon" alt="MyPage"
+                    style="border-radius: 50%; background: #fef3c7;">
+                <span class="nav-text" data-i18n="navMyPage">じぶん</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="/js/lang.js"></script>
+    <script src="/js/script.js"></script>
+</body>
+
+</html>
