@@ -11,6 +11,7 @@ const translations = {
         guideTitle: "💡 ずかん",
         langChangeTitle: "🌐 げんご せってい",
         navHome: "おうち",
+        navQuiz: "クイズ",
         navMiniGame: "ミニゲーム",
         navShop: "おみせ",
         navMyPage: "じぶん",
@@ -21,16 +22,20 @@ const translations = {
         btnFeed: "あげる",
         btnBuy: "かう",
         btnNext: "おうちへもどる ✨",
-        btnExitGame: "🏠 もどる",
+        btnExitGame: "🏠 戻る",
         popupGameTitle: "入場料 🪙 100 かかります",
         popupGameDesc: "ゲームを はじめますか？",
+        popupQuizTitle: "クイズに チャレンジ！",
+        popupQuizDesc: "クイズを クリアして 🪙 50コインを もらおう！",
         btnCancel: "やめる ❌",
         btnStart: "はじめる ⭕",
         msgLevelUp: "レベルアップ！",
         msgFeed: "たべたよ！",
         msgBuy: "かったよ！",
         msgNoCoin: "コインが たりないよ！",
-        msgNotEnoughCoinGame: "入場料にコインが 100ひつようだよ！"
+        msgNotEnoughCoinGame: "入場料にコインが 100ひつようだよ！",
+        quizTitle: "🧠 えいよう クイズ",
+        btnNextQuiz: "つぎへ ➡️"
     },
     my: {
         charSelectTitle: "Character ရွေးချယ်ပါ",
@@ -44,6 +49,7 @@ const translations = {
         guideTitle: "💡 အာဟာရ ဗဟုသုတ",
         langChangeTitle: "🌐 ဘာသာစကား ပြောင်းရန်",
         navHome: "Home",
+        navQuiz: "Quiz",
         navMiniGame: "Mini Game",
         navShop: "Shop",
         navMyPage: "Profile",
@@ -57,13 +63,17 @@ const translations = {
         btnExitGame: "🏠 ပြန်မည်",
         popupGameTitle: "ဝင်ကြေး 🪙 100 ကျသင့်မည်",
         popupGameDesc: "ဂိမ်း စတင်ဆော့မလား?",
+        popupQuizTitle: "Quiz ဖြေဆိုရန်",
+        popupQuizDesc: "Quiz ဖြေဆိုပြီး 🪙 50 Coin ရယူလိုက်ပါ!",
         btnCancel: "မဆော့တော့ပါ ❌",
         btnStart: "စတင်မည် ⭕",
         msgLevelUp: "Level တက်သွားပါပြီ!",
         msgFeed: "ကျွေးလိုက်ပါပြီ!",
         msgBuy: "ဝယ်ယူပြီးပါပြီ!",
         msgNoCoin: "Coin မလုံလောက်ပါ!",
-        msgNotEnoughCoinGame: "ဂိမ်းဆော့ရန် Coin 100 လိုအပ်ပါသည်!"
+        msgNotEnoughCoinGame: "ဂိမ်းဆော့ရန် Coin 100 လိုအပ်ပါသည်!",
+        quizTitle: "🧠 အာဟာရ Quiz",
+        btnNextQuiz: "နောက်သို့ ➡️"
     }
 };
 
@@ -89,14 +99,61 @@ const charactersData = {
 };
 
 const foodsData = {
-    apple:      { category: 'veg', reqLevel: 1, emoji: "🍎", price: 10, fullness: 15, exp: 10, isJunk: false, name: { ja: "りんご", my: "ပန်းသီး" }, desc: { ja: "ビタミンたっぷりで げんき！", my: "Vitamin C ကျန်းမာရေး" } },
-    banana:     { category: 'veg', reqLevel: 1, emoji: "🍌", price: 10, fullness: 15, exp: 10, isJunk: false, name: { ja: "バナナ", my: "ငှက်ပျောသီး" }, desc: { ja: "すぐ エネルギーになるよ", my: "စွမ်းအင်ရရှိစေသည်" } },
-    carrot:     { category: 'veg', reqLevel: 1, emoji: "🥕", price: 15, fullness: 20, exp: 15, isJunk: false, name: { ja: "にんじん", my: "မုန်လာဥနီ" }, desc: { ja: "目が よくなるよ", my: "မျက်စိအားကောင်းစေသည်" } },
-    broccoli:   { category: 'veg', reqLevel: 1, emoji: "🥦", price: 15, fullness: 20, exp: 15, isJunk: false, name: { ja: "ブロッコリー", my: "ပန်းပွင့်စိမ်း" }, desc: { ja: "からだを まもるよ", my: "ခုခံအား တိုးစေသည်" } },
-    egg:        { category: 'meat', reqLevel: 1, emoji: "🥚", price: 15, fullness: 20, exp: 15, isJunk: false, name: { ja: "たまご", my: "ကြက်ဥ" }, desc: { ja: "からだを つくるよ", my: "ကြွက်သား သန်မာစေသည်" } },
-    fish:       { category: 'meat', reqLevel: 1, emoji: "🐟", price: 25, fullness: 30, exp: 20, isJunk: false, name: { ja: "さかな", my: "ငါး" }, desc: { ja: "あたまが よくなるよ", my: "ဦးနှောက် ဖွံ့ဖြိုးစေသည်" } },
-    donut:      { category: 'snack', reqLevel: 1, emoji: "🍩", price: 20, fullness: 30, exp: 5,  isJunk: true,  name: { ja: "ドーナツ", my: "ဒိုးနတ်" }, desc: { ja: "ジャンクフード", my: "Junk Food" } },
-    frenchfries:{ category: 'snack', reqLevel: 1, emoji: "🍟", price: 25, fullness: 35, exp: 5,  isJunk: true,  name: { ja: "ポテト", my: "အာလူးကြော်" }, desc: { ja: "ジャンクフード", my: "Junk Food" } },
-    hamburger:  { category: 'snack', reqLevel: 1, emoji: "🍔", price: 30, fullness: 40, exp: 5,  isJunk: true,  name: { ja: "バーガー", my: "ဟမ်ဘာဂါ" }, desc: { ja: "ジャンクフード", my: "Junk Food" } },
-    milk:       { category: 'dairy', reqLevel: 1, emoji: "🥛", price: 15, fullness: 20, exp: 15, isJunk: false, name: { ja: "ぎゅうにゅう", my: "နွားနို့" }, desc: { ja: "ほねが つよくなるよ", my: "အရိုး သန်မာစေသည်" } }
+    // --- 1. Vegetable & Fruit ---
+    apple:       { category: 'veg', reqLevel: 1, emoji: "🍎", price: 10, fullness: 15, exp: 10, isJunk: false, name: { ja: "りんご", my: "ပန်းသီး" }, desc: { ja: "ビタミンCが たっぷりで、かぜを ひきにくく するよ！", my: "ဗီတာမင် C ကြွယ်ဝလို့ အအေးမိ တုပ်ကွေးမှ ကာကွယ်ပေးတယ်!" } },
+    banana:      { category: 'veg', reqLevel: 1, emoji: "🍌", price: 10, fullness: 15, exp: 10, isJunk: false, name: { ja: "バナナ", my: "ငှက်ပျောသီး" }, desc: { ja: "すぐに エネルギーに なるから、うんどうの まえに ぴったり！", my: "စွမ်းအင်ချက်ချင်း ရရှိစေလို့ အားကစားမလုပ်မီ စားရင် အလွန်ကောင်းတယ်!" } },
+    carrot:      { category: 'veg', reqLevel: 1, emoji: "🥕", price: 15, fullness: 20, exp: 15, isJunk: false, name: { ja: "にんじん", my: "မုန်လာဥနီ" }, desc: { ja: "ビタミンAが おおくて、目を よく してくれるよ！", my: "ဗီတာမင် A အများကြီးပါဝင်လို့ မျက်စိအားကောင်းစေတယ်!" } },
+    broccoli:    { category: 'veg', reqLevel: 1, emoji: "🥦", price: 15, fullness: 20, exp: 15, isJunk: false, name: { ja: "ブロッコリー", my: "ပန်းပွင့်စိမ်း" }, desc: { ja: "からだの めんえきりょくを たかめて、びょうきから まもるよ！", my: "ကိုယ်ခံအားစနစ်ကို မြှင့်တင်ပေးပြီး ရောဂါတွေရန်က ကာကွယ်ပေးတယ်!" } },
+    strawberry:  { category: 'veg', reqLevel: 1, emoji: "🍓", price: 12, fullness: 15, exp: 10, isJunk: false, name: { ja: "いちご", my: "စတောဘယ်ရီ" }, desc: { ja: "おはだを つるつるに して、かぜの 予防にも なるよ！", my: "အသားအရေကို လှပစေပြီး အအေးမိခြင်းမှ ကာကွယ်ပေးတယ်!" } },
+    grapes:      { category: 'veg', reqLevel: 2, emoji: "🍇", price: 18, fullness: 20, exp: 15, isJunk: false, name: { ja: "ぶどう", my: "စပျစ်သီး" }, desc: { ja: "あたまの つかれを とって、げんきを 回復させて くれるよ！", my: "ဦးနှောက်မောပန်းမှုကို ပြေပျောက်စေပြီး လန်းဆန်းစေတယ်!" } },
+    watermelon:  { category: 'veg', reqLevel: 2, emoji: "🍉", price: 20, fullness: 25, exp: 15, isJunk: false, name: { ja: "すいか", my: "ဖရဲသီး" }, desc: { ja: "すいぶんが たっぷりで、あつい 日の 水分ほきゅうに 最適！", my: "ရေဓာတ်ပြည့်ဝစွာ ပါဝင်လို့ ပူအိုက်တဲ့ရက်တွေမှာ ရေဓာတ်ဖြည့်ပေးတယ်!" } },
+    orange:      { category: 'veg', reqLevel: 1, emoji: "🍊", price: 12, fullness: 15, exp: 10, isJunk: false, name: { ja: "みかん", my: "ကမ္ဗလာသီး" }, desc: { ja: "ビタミンCで おはだを 健康に 保つよ！", my: "ဗီတာမင် C ပါဝင်လို့ အသားအရေနဲ့ ကျန်းမာရေးကို ညီညွတ်စေတယ်!" } },
+    pineapple:   { category: 'veg', reqLevel: 2, emoji: "🍍", price: 22, fullness: 25, exp: 18, isJunk: false, name: { ja: "パイナップル", my: "နာနတ်သီး" }, desc: { ja: "いのおなかを すっきり させて、しょうかを たすけるよ！", my: "အစာချေစနစ်ကို အထောက်အကူပြုပြီး ဗိုက်အောင့်တာ သက်သာစေတယ်!" } },
+    peach:       { category: 'veg', reqLevel: 2, emoji: "🍑", price: 20, fullness: 20, exp: 15, isJunk: false, name: { ja: "もも", my: "မက်မွန်သီး" }, desc: { ja: "しょくもつせんいが おおくて、おなかを そうじ してくれるよ！", my: "အမျှင်ဓာတ် အများကြီးပါလို့ အစာအိမ်နဲ့ အူလမ်းကြောင်းကို သန့်စင်ပေးတယ်!" } },
+    tomato:      { category: 'veg', reqLevel: 1, emoji: "🍅", price: 12, fullness: 15, exp: 10, isJunk: false, name: { ja: "トマト", my: "ခရမ်းချဉ်သီး" }, desc: { ja: "リコピンで 血液を サラサラに してくれるよ！", my: "လိုင်ကိုပင်း ပါဝင်လို့ သွေးလှည့်ပတ်မှုကို ကောင်းမွန်စေတယ်!" } },
+    corn:        { category: 'veg', reqLevel: 1, emoji: "🌽", price: 15, fullness: 20, exp: 12, isJunk: false, name: { ja: "とうもろこし", my: "ပြောင်းဖူး" }, desc: { ja: "エネルギーに なりやすく、おなかの 調子を 整えるよ！", my: "စွမ်းအင်လွယ်ကူစွာ ရရှိစေပြီး အစာအိမ် ကျန်းမာရေးကို ကောင်းမွန်စေတယ်!" } },
+    cucumber:    { category: 'veg', reqLevel: 1, emoji: "🥒", price: 10, fullness: 12, exp: 8,  isJunk: false, name: { ja: "きゅうり", my: "သခွားသီး" }, desc: { ja: "からだの 熱を さまして、水分補給を 助けるよ！", my: "ခန္ဓာကိုယ် အပူကို ကျစေပြီး ရေဓာတ်ကို ပြည့်ဝစေတယ်!" } },
+    avocado:     { category: 'veg', reqLevel: 2, emoji: "🥑", price: 25, fullness: 30, exp: 20, isJunk: false, name: { ja: "アボカド", my: "ထောပတ်သီး" }, desc: { ja: "いい ししつが おおくて、しんぞうを 健康に するよ！", my: "ကျန်းမာရေးနှင့်ညီညွတ်သော အဆီဓာတ်ပါဝင်လို့ နှလုံးကို သန်မာစေတယ်!" } },
+    potato:      { category: 'veg', reqLevel: 1, emoji: "🥔", price: 12, fullness: 20, exp: 10, isJunk: false, name: { ja: "じゃがいも", my: "အာလူး" }, desc: { ja: "たいりょくを つけて、力いっぱい うごけるように なるよ！", my: "ခွန်အားပြည့်ဝစေပြီး ရုပ်ပိုင်းဆိုင်ရာ ကြံ့ခိုင်မှုကို ပေးစွမ်းနိုင်တယ်!" } },
+
+    // --- 2. Meat & Protein ---
+    egg:         { category: 'meat', reqLevel: 1, emoji: "🥚", price: 15, fullness: 20, exp: 15, isJunk: false, name: { ja: "たまご", my: "ကြက်ဥ" }, desc: { ja: "たんぱくしつが たっぷりで、きんにくを つくるよ！", my: "ပရိုတိန်းဓာတ် ပြည့်ဝစွာပါဝင်လို့ ကြွက်သားများကို သန်မာစေတယ်!" } },
+    fish:        { category: 'meat', reqLevel: 1, emoji: "🐟", price: 25, fullness: 30, exp: 20, isJunk: false, name: { ja: "さかな", my: "ငါး" }, desc: { ja: "DHAが あたまを よくして、記憶力を 高めるよ！", my: "DHA ပါဝင်လို့ ဦးနှောက်ဉာဏ်ရည်နှင့် မှတ်ဉာဏ်ကို တိုးတက်စေတယ်!" } },
+    chicken:     { category: 'meat', reqLevel: 1, emoji: "🍗", price: 20, fullness: 25, exp: 18, isJunk: false, name: { ja: "とりにと", my: "ကြက်သား" }, desc: { ja: "ヘルシーな たんぱくしつで、じょうぶな からだを つくるよ！", my: "ကျန်းမာရေးနှင့်ညီညွတ်သော ပရိုတိန်းပါဝင်လို့ ခန္ဓာကိုယ်ကို သန်စွမ်းစေတယ်!" } },
+    steak:       { category: 'meat', reqLevel: 2, emoji: "🥩", price: 30, fullness: 35, exp: 25, isJunk: false, name: { ja: "ステーキ", my: "အမဲသားစတေးခ်" }, desc: { ja: "てつぶんが おおくて、ちからが わいて くるよ！", my: "သံဓာတ် အများကြီးပါဝင်လို့ သွေးအားကောင်းပြီး အားအင်ပြည့်ဝစေတယ်!" } },
+    shrimp:      { category: 'meat', reqLevel: 2, emoji: "🦐", price: 22, fullness: 25, exp: 18, isJunk: false, name: { ja: "エビ", my: "ပုစွန်" }, desc: { ja: "タウリンが つかれを とって、元気いっぱいにするよ！", my: "ပင်ပန်းနွမ်းနယ်မှုကို ပြေပျောက်စေပြီး လန်းဆန်းတက်ကြွစေတယ်!" } },
+    tofu:        { category: 'meat', reqLevel: 1, emoji: "🧊", price: 12, fullness: 18, exp: 12, isJunk: false, name: { ja: "とうふ", my: "ပဲပြား" }, desc: { ja: "だいずの たんぱくしつで、からだに やさしく 栄養補給！", my: "ပဲပရိုတိန်းဓာတ်ပါဝင်လို့ ခန္ဓာကိုယ်အတွက် ဘေးဥပါဒ်မရှိ အာဟာရပြည့်စေတယ်!" } },
+    squid:       { category: 'meat', reqLevel: 2, emoji: "🦑", price: 22, fullness: 25, exp: 18, isJunk: false, name: { ja: "イカ", my: "ပြည်ကြီးငါး" }, desc: { ja: "かむ 力（ちから）を つけて、あごを つよく するよ！", my: "ဝါးစားရတာကြောင့် မေးရိုးနဲ့ သွားများကို သန်မာစေတယ်!" } },
+    pork:        { category: 'meat', reqLevel: 2, emoji: "🥓", price: 25, fullness: 30, exp: 20, isJunk: false, name: { ja: "ぶたにく", my: "ဝက်သား" }, desc: { ja: "ビタミンB1が つかれを ふきとばして くれるよ！", my: "ဗီတာမင် B1 ပါဝင်လို့ မောပန်းသမျှကို အမြန်ဆုံး သက်သာစေတယ်!" } },
+    crab:        { category: 'meat', reqLevel: 3, emoji: "🦀", price: 35, fullness: 35, exp: 30, isJunk: false, name: { ja: "カニ", my: "ဂဏန်း" }, desc: { ja: "カルシウムが おおくて、ほねの 成長を たすけるよ！", my: "ကယ်လ်ဆီယမ် အများကြီးပါဝင်လို့ အရိုးကြီးထွားမှုကို အထောက်အကူပြုတယ်!" } },
+    salmon:      { category: 'meat', reqLevel: 2, emoji: "🍣", price: 28, fullness: 30, exp: 22, isJunk: false, name: { ja: "サーモン", my: "ဆယ်လ်မွန်ငါး" }, desc: { ja: "アスタキサンチンが からだの さびつきを ふせぐよ！", my: "ဆဲလ်များ ပျက်စီးခြင်းမှ ကာကွယ်ပေးပြီး ကိုယ်ခံအားကောင်းစေတယ်!" } },
+
+    // --- 3. Dairy & Staples ---
+    milk:        { category: 'dairy', reqLevel: 1, emoji: "🥛", price: 15, fullness: 20, exp: 15, isJunk: false, name: { ja: "ぎゅうにゅう", my: "နွားနို့" }, desc: { ja: "カルシウムで ほねや 歯を つよく 成長させるよ！", my: "ကယ်လ်ဆီယမ်ဓာတ်ပါလို့ အရိုးနဲ့ သွားများကို သန်မာကြီးထွားစေတယ်!" } },
+    cheese:      { category: 'dairy', reqLevel: 1, emoji: "🧀", price: 18, fullness: 22, exp: 15, isJunk: false, name: { ja: "チーズ", my: "ဒိန်ခဲ" }, desc: { ja: "ほねを じょうぶに して、イライラを ふせぐよ！", my: "အရိုးကို သန်မာစေပြီး စိတ်ကြည်လင်ဆန်းသစ်စေတယ်!" } },
+    yogurt:      { category: 'dairy', reqLevel: 1, emoji: "🥣", price: 15, fullness: 18, exp: 12, isJunk: false, name: { ja: "ヨーグルト", my: "ဒိန်ချဉ်" }, desc: { ja: "にゅうさんきんが おなかの ちょうしを よく するよ！", my: "အကျိုးပြု ဘက်တီးရီးယားများပါလို့ ဝမ်းဗိုက်ကျန်းမာရေးကို ကောင်းမွန်စေတယ်!" } },
+    rice:        { category: 'dairy', reqLevel: 1, emoji: "🍚", price: 10, fullness: 25, exp: 10, isJunk: false, name: { ja: "ごはん", my: "ထမင်း" }, desc: { ja: "毎日の げんきの もと！しっかり たべよう！", my: "နေ့စဉ် လှုပ်ရှားရောင်းကန်ဖို့ အဓိက စွမ်းအင်အရင်းအမြစ် ဖြစ်တယ်!" } },
+    bread:       { category: 'dairy', reqLevel: 1, emoji: "🍞", price: 10, fullness: 20, exp: 10, isJunk: false, name: { ja: "パン", my: "ပေါင်မုန့်" }, desc: { ja: "あさの エネルギーほきゅうに ぴったり！", my: "နံနက်ခင်း စွမ်းအင်လိုအပ်ချက်အတွက် အလွန် သင့်တော်တယ်!" } },
+    spaghetti:   { category: 'dairy', reqLevel: 2, emoji: "🍝", price: 25, fullness: 30, exp: 20, isJunk: false, name: { ja: "パスタ", my: "ခေါက်ဆွဲ/ပါစတာ" }, desc: { ja: "ながく つづく エネルギーに なるよ！", my: "ကြာရှည်ခံတဲ့ စွမ်းအင်ကို ထောက်ပံ့ပေးနိုင်တယ်!" } },
+    noodle:      { category: 'dairy', reqLevel: 1, emoji: "🍜", price: 20, fullness: 25, exp: 15, isJunk: false, name: { ja: "ラーメン", my: "ခေါက်ဆွဲပြုတ်" }, desc: { ja: "からだを あたためて くれるけど、スープの つみすぎに 注意！", my: "ခန္ဓာကိုယ်ကို နွေးထွေးစေပေမဲ့ အရည်အများကြီး သောက်ရင် ငန်နိုင်တယ်!" } },
+    butter:      { category: 'dairy', reqLevel: 2, emoji: "🧈", price: 15, fullness: 15, exp: 8,  isJunk: false, name: { ja: "バター", my: "ထောပတ်" }, desc: { ja: "りょうりを おいしく するけど、つけすぎに 注意しよう！", my: "ဟင်းလျာကို အရသာရှိစေပေမဲ့ အများကြီးစားရင် အဆီတက်နိုင်တယ်!" } },
+    green_tea:   { category: 'dairy', reqLevel: 1, emoji: "🍵", price: 10, fullness: 10, exp: 10, isJunk: false, name: { ja: "おちゃ", my: "လက်ဖက်ရည်ကြမ်း" }, desc: { ja: "カテキンで おくちの なかを クリーンに 保つよ！", my: "ပါးစပ်အတွင်း သန့်ရှင်းစေပြီး သွားပိုးစားခြင်းမှ ကာကွယ်ပေးတယ်!" } },
+    water:       { category: 'dairy', reqLevel: 1, emoji: "💧", price: 5,  fullness: 10, exp: 5,  isJunk: false, name: { ja: "おみず", my: "သောက်ရေသန့်" }, desc: { ja: "からだの なかを きれいに 循環させる 一番 大切な もの！", my: "ခန္ဓာကိုယ်အတွက် မရှိမဖြစ် အရေးအကြီးဆုံး ရေဓာတ်ကို ဖြည့်ပေးတယ်!" } },
+
+    // --- 4. Snacks & Junk Food ---
+    donut:       { category: 'snack', reqLevel: 1, emoji: "🍩", price: 20, fullness: 30, exp: 5,  isJunk: true,  name: { ja: "ドーナツ", my: "ဒိုးနတ်" }, desc: { ja: "さとうが おおくて、たべすぎると むしばや ふとりすぎに！", my: "သကြား အများကြီးပါလို့ အများကြီးစားရင် သွားပိုးစားပြီး ဝလာနိုင်တယ်!" } },
+    frenchfries: { category: 'snack', reqLevel: 1, emoji: "🍟", price: 25, fullness: 35, exp: 5,  isJunk: true,  name: { ja: "ポテト", my: "အာလူးကြော်" }, desc: { ja: "あぶらと しおが おおいから、たまに たべるくらいに しよう！", my: "ဆီနဲ့ အဆီဓာတ် အများကြီးပါလို့ မကြာခဏ မစားသင့်ဘူး!" } },
+    hamburger:   { category: 'snack', reqLevel: 1, emoji: "🍔", price: 30, fullness: 40, exp: 5,  isJunk: true,  name: { ja: "バーガー", my: "ဟမ်ဘာဂါ" }, desc: { ja: "カロリーが たかいから、やさいも いっしょに たべよう！", my: "ကယ်လိုရီ မြင့်မားလွန်းလို့ အသီးအရွက်ပါ တွဲဖက်စားပေးရမယ်!" } },
+    pizza:       { category: 'snack', reqLevel: 2, emoji: "🍕", price: 35, fullness: 40, exp: 5,  isJunk: true,  name: { ja: "ピザ", my: "ပီဇာ" }, desc: { ja: "おいしいけれど、ししつが おおいから たべすぎ 注意！", my: "အရသာရှိပေမဲ့ အဆီဓာတ်များတာမို့ အလွန်အကျွံ မစားပါနဲ့!" } },
+    icecream:    { category: 'snack', reqLevel: 1, emoji: "🍦", price: 15, fullness: 20, exp: 5,  isJunk: true,  name: { ja: "アイス", my: "ရေခဲမုန့်" }, desc: { ja: "つめたくて さとうが おおいから、おなかを ひやさないように！", my: "အေးပြီး သကြားများလို့ အများကြီးစားရင် ဗိုက်နာနိုင်တယ်!" } },
+    cake:        { category: 'snack', reqLevel: 2, emoji: "🍰", price: 30, fullness: 30, exp: 5,  isJunk: true,  name: { ja: "ケーキ", my: "ကိတ်မုန့်" }, desc: { ja: "たんじょうびの たのしみ！でも たべすぎると むしばに なるよ！", my: "မွေးနေ့ပွဲသုံး မုန့်ဖြစ်ပေမဲ့ အများကြီးစားရင် သွားပိုးစားစေတယ်!" } },
+    candy:       { category: 'snack', reqLevel: 1, emoji: "🍬", price: 8,  fullness: 10, exp: 2,  isJunk: true,  name: { ja: "キャンディ", my: "သကြားလုံး" }, desc: { ja: "おくちに ながく のこるから、たべたら はみがき しよう！", my: "ပါးစပ်ထဲ သကြားဓာတ် ကြာရှည်ကျန်ခဲ့လို့ စားပြီးရင် သွားတိုက်ရမယ်!" } },
+    chocolate:   { category: 'snack', reqLevel: 1, emoji: "🍫", price: 15, fullness: 15, exp: 5,  isJunk: true,  name: { ja: "チョコ", my: "ချောကလက်" }, desc: { ja: "げんきには なるけど、さとうが おおいから ちゅうい！", my: "တက်ကြွစေပေမဲ့ သကြားဓာတ်များလို့ သင့်တော်ရုံပဲ စားရမယ်!" } },
+    popcorn:     { category: 'snack', reqLevel: 1, emoji: "🍿", price: 18, fullness: 20, exp: 5,  isJunk: true,  name: { ja: "ポップコーン", my: "ပေါက်ပေါက်ဆန်း" }, desc: { ja: "しおあじの たべすぎは、のどが かわいて からだに ふたん！", my: "အငန်ဓာတ် အများကြီးပါရင် ရေငတ်ပြီး ကျန်းမာရေး ထိခိုက်နိုင်တယ်!" } },
+    soda:        { category: 'snack', reqLevel: 1, emoji: "🥤", price: 12, fullness: 15, exp: 2,  isJunk: true,  name: { ja: "ジュース", my: "အချိုရည်/ဂက်စ်ရည်" }, desc: { ja: "さとうが たくさん はいているから、のみすぎに ちゅうい！", my: "သကြားဓာတ် လွန်ကဲစွာပါဝင်လို့ အများကြီး မသောက်သင့်ဘူး!" } },
+    pancake:     { category: 'snack', reqLevel: 2, emoji: "🥞", price: 22, fullness: 25, exp: 8,  isJunk: true,  name: { ja: "パンケーキ", my: "ပန်ကိတ်" }, desc: { ja: "シロップの かけすぎに ちゅういして たべよう！", my: "ပျားရည်/ဆီရက်ပ် အများကြီး မဆမ်းဘဲ စားပေးပါ!" } },
+    cookie:      { category: 'snack', reqLevel: 1, emoji: "🍪", price: 10, fullness: 15, exp: 4,  isJunk: true,  name: { ja: "クッキー", my: "ကွတ်ကီးမုန့်" }, desc: { ja: "サクサクでおいしいけど、さとうと バターが たっぷり！", my: "ကျွတ်ကျွတ်အိအိ မုန့်ဖြစ်ပေမဲ့ သကြားနဲ့ ထောပတ် အများကြီးပါတယ်!" } },
+    hotdog:      { category: 'snack', reqLevel: 2, emoji: "🌭", price: 28, fullness: 35, exp: 5,  isJunk: true,  name: { ja: "ホットドッグ", my: "ဟော့ဒေါ့ခ်" }, desc: { ja: "かんたんに たべられるけど、しおぶんが たかいよ！", my: "လွယ်ကူစွာ စားနိုင်ပေမဲ့ အငန်ဓာတ် မြင့်မားပါတယ်!" } },
+    lollipop:    { category: 'snack', reqLevel: 1, emoji: "🍭", price: 10, fullness: 10, exp: 2,  isJunk: true,  name: { ja: "ペロペロキャンディ", my: "ချိုချဉ်တံ" }, desc: { ja: "なが時間 なめていると、むしばの げんいんに なるよ！", my: "ပါးစပ်ထဲ ကြာရှည် ငုံထားပါက သွားပိုးစားခြင်းကို ဖြစ်စေတယ်!" } },
+    bento:       { category: 'snack', reqLevel: 2, emoji: "🍱", price: 40, fullness: 50, exp: 20, isJunk: false, name: { ja: "おべんとう", my: "ထမင်းဘူး" }, desc: { ja: "やさいも おにくも バランスよく はいっているよ！", my: "အသီးအရွက်ရော အသားပါ အာဟာရ မျှတစွာ ပါဝင်ပါတယ်!" } }
 };
