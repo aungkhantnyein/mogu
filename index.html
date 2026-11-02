@@ -137,6 +137,29 @@
             </div>
         </div>
 
+        <!-- 3.1 Quiz Screen -->
+        <div id="quizScreen" class="content hidden">
+            <div class="game-header text-center" style="margin-top: 10px;">
+                <h2 class="game-title-text" data-i18n="quizTitle">🧠 えいよう クイズ</h2>
+                <span id="quizProgressText" class="stage-subtitle">1 / 5</span>
+            </div>
+
+            <div class="hud-panel text-center" style="padding: 20px;">
+                <div id="quizImageContainer" style="font-size: 55px; margin-bottom: 10px;">🥕</div>
+                <h3 id="quizQuestionText" style="font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 15px;"></h3>
+                
+                <div id="quizOptionsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Options injected dynamically -->
+                </div>
+            </div>
+
+            <div id="quizExplanationBox" class="hud-panel hidden">
+                <h4 id="quizResultTitle" style="margin: 0 0 6px 0; font-size: 14px; font-weight: 800;"></h4>
+                <p id="quizExplanationText" style="margin: 0 0 12px 0; font-size: 12px; font-weight: 700; color: #78350f;"></p>
+                <button class="game-btn btn-primary" onclick="nextQuizQuestion()" data-i18n="btnNextQuiz">つぎへ ➡️</button>
+            </div>
+        </div>
+
         <!-- 4. Shop Screen -->
         <div id="shopScreen" class="content hidden">
             <div class="game-header text-center" style="margin-top: 10px;">
@@ -193,14 +216,14 @@
         <!-- Toast Notification -->
         <div id="toastNotification" class="toast"></div>
 
-        <!-- Mini Game Entry Confirmation Popup Modal -->
-        <div id="gameEntryModal" class="modal-overlay">
+        <!-- Mini Game Entry Modal -->
+        <div id="miniGameEntryModal" class="modal-overlay">
             <div class="game-modal-card">
                 <div class="modal-result-badge wrong">🎮 ミニゲーム</div>
                 <h3 class="modal-item-title" data-i18n="popupGameTitle">入場料 🪙 100 かかります</h3>
                 <p class="modal-item-desc" data-i18n="popupGameDesc">ゲームを はじめますか？</p>
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button class="game-btn btn-danger" style="flex: 1; padding: 10px;" onclick="closeGameEntryModal()"
+                    <button class="game-btn btn-danger" style="flex: 1; padding: 10px;" onclick="closeMiniGameEntryModal()"
                         data-i18n="btnCancel">やめる ❌</button>
                     <button class="game-btn btn-success" style="flex: 1; padding: 10px;"
                         onclick="confirmAndStartCatchGame()" data-i18n="btnStart">はじめる ⭕</button>
@@ -208,12 +231,27 @@
             </div>
         </div>
 
+        <!-- Quiz Entry Confirmation Popup Modal -->
+        <div id="gameEntryModal" class="modal-overlay">
+            <div class="game-modal-card">
+                <div class="modal-result-badge wrong">🧠 クイズ</div>
+                <h3 class="modal-item-title" data-i18n="popupQuizTitle">クイズに チャレンジ！</h3>
+                <p class="modal-item-desc" data-i18n="popupQuizDesc">クイズを クリアして 🪙 50コインを もらおう！</p>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="game-btn btn-danger" style="flex: 1; padding: 10px;" onclick="closeGameEntryModal()"
+                        data-i18n="btnCancel">やめる ❌</button>
+                    <button class="game-btn btn-success" style="flex: 1; padding: 10px;"
+                        onclick="confirmAndStartQuiz()" data-i18n="btnStart">はじめる ⭕</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Game Over / Result Modal -->
         <div id="gameResultModal" class="modal-overlay">
             <div class="game-modal-card">
-                <div class="modal-result-badge correct">🎉 ゲーム クリア！</div>
+                <div id="modalResultBadge" class="modal-result-badge correct">🎉 クリア！</div>
                 <h3 id="modalScoreTitle" class="modal-item-title">スコア: 0</h3>
-                <p id="modalRewardDesc" class="modal-item-desc">💎 +2 Diamond ရရှိပါပြီ!</p>
+                <p id="modalRewardDesc" class="modal-item-desc"></p>
                 <button class="game-btn btn-primary modal-next-btn" onclick="closeGameResultModal()"
                     data-i18n="btnNext">おうちへもどる ✨</button>
             </div>
@@ -236,7 +274,11 @@
                 <span class="nav-text" data-i18n="navHome">おうち</span>
             </button>
             <button class="game-nav-item" onclick="openGameEntryModal(this)">
-                <img src="img/quiz.png" class="nav-custom-icon" alt="Game">
+                <img src="img/quiz.png" class="nav-custom-icon" alt="Quiz">
+                <span class="nav-text" data-i18n="navQuiz">クイズ</span>
+            </button>
+            <button class="game-nav-item" onclick="openMiniGameModal(this)">
+                <img src="img/game.png" class="nav-custom-icon" alt="MiniGame" onerror="this.src='img/quiz.png'">
                 <span class="nav-text" data-i18n="navMiniGame">ミニゲーム</span>
             </button>
             <button class="game-nav-item" onclick="switchTab('shopScreen', this)">
