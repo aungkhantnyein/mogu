@@ -18,6 +18,7 @@ let gameScore = 0;
 let playerXPos = 50;
 let targetXPos = 50;
 let playerMoveSpeed = 3.5;
+let playerScale = 1.0; // Mini game အတွင်း character အရွယ်အစား ကြီး/သေး ပြောင်းရန် variable
 let moveDirection = 0;
 let activeFallingItems = [];
 let isGameRunning = false;
@@ -48,14 +49,9 @@ function playPopSound(freq = 400) {
         osc.start();
         osc.stop(audioCtx.currentTime + 0.1);
         setTimeout(() => audioCtx.close(), 250);
-    } catch (e) {}
+    } catch (e) { }
 }
 
-/*
- * Stage avatar paths in charactersData can remain PNG paths.
- * If a matching WebM exists, use it for <video>; otherwise keep the PNG fallback.
- * Naming convention: img/moguidle.webm, img/mogu_stage2.webm, etc.
- */
 function getStageMediaPath(avatarPath) {
     if (!avatarPath) return 'img/moguidle.webm';
     const path = String(avatarPath);
@@ -68,7 +64,6 @@ function setVideoSource(video, avatarPath, fallbackImage = 'img/moguidle.png') {
     if (!video) return;
     const webmPath = getStageMediaPath(avatarPath);
     video.onerror = () => {
-        // Keep a visible fallback if a stage-specific WebM has not been created.
         video.onerror = null;
         const img = document.createElement('img');
         img.id = video.id;
@@ -85,7 +80,7 @@ function setVideoSource(video, avatarPath, fallbackImage = 'img/moguidle.png') {
     video.playsInline = true;
     video.load();
     const playPromise = video.play();
-    if (playPromise && playPromise.catch) playPromise.catch(() => {});
+    if (playPromise && playPromise.catch) playPromise.catch(() => { });
 }
 
 function interactCharacter() {
@@ -209,6 +204,9 @@ function startCatchGameEngine() {
     gameScore = 0;
     gameTimerSeconds = 30;
     playerMoveSpeed = 3.5;
+    playerScale = 1.0; // ဂိမ်းစတင်ချိန်တွင် အရွယ်အစား မူလအတိုင်းထားမည်
+    updatePlayerScale();
+
     playerXPos = targetXPos = 50;
     moveDirection = 0;
     activeFallingItems.forEach(it => it.element.remove());
@@ -236,6 +234,14 @@ function startCatchGameEngine() {
     itemSpawnerTimer = setInterval(spawnFallingItem, 400);
     requestAnimationFrame(updateGameLoop);
     setupSmoothControls();
+}
+
+// Mogu-chan ၏ Mini game အတွင်း scale အတိုးအလျော့ကို ထိန်းချုပ်ပေးသော function
+function updatePlayerScale() {
+    const basket = document.getElementById('playerBasket');
+    if (basket) {
+        basket.style.transform = `translateX(-50%) scale(${playerScale})`;
+    }
 }
 
 function setupSmoothControls() {
@@ -301,10 +307,19 @@ function updateGameLoop() {
             playPopSound(item.isJunk ? 200 : 900);
             showFloatingEffect(item.x, item.y, item.isJunk ? '-5 🛑' : '+10 ✨',
                 item.isJunk ? '#f43f5e' : '#22c55e');
+
             if (item.isJunk) {
                 playerMoveSpeed = Math.max(0.4, playerMoveSpeed - 0.8);
+                playerScale = Math.max(0.5, playerScale - 0.2); // Junk food စားမိလျှင် ပိုသေးသွားမည်
                 gameScore = Math.max(0, gameScore - 5);
-            } else gameScore += 10;
+            } else {
+                // Healthy food စားမိလျှင် အများကြီး ပိုကြီးလာမည် (scale ကို 0.35 စီတိုးပြီး အများဆုံး 2.5 ထိ ကြီးနိုင်သည်)
+                playerScale = Math.min(2.5, playerScale + 0.35);
+                gameScore += 10;
+            }
+
+            updatePlayerScale(); // အရွယ်အစားပြောင်းလဲမှုကို Screen ပေါ်တွင် ပုံဖော်ပေးမည်
+
             document.getElementById('gameScoreText').innerText = `スコア: ${gameScore}`;
             item.element.remove();
             activeFallingItems.splice(i, 1);
@@ -425,7 +440,7 @@ function renderMyPageGuides() {
     });
 }
 function showFoodModal(foodKey) {
-    const food = foodsData[foodKey];
+    const food = foodsData[key];
     const modalMediaContainer = document.getElementById('modalEmoji');
     if (!modalMediaContainer) return;
     if (food.emoji && food.emoji.includes('/')) {
@@ -444,7 +459,7 @@ function closeFoodModalOnOutside(event) {
     if (modalCard && !modalCard.contains(event.target)) closeFoodModal();
 }
 
-function updateAvatarElement(elementId, avatarPath, fallbackName = 'Pet') {
+function updateAvatarElement(elementId, avatarPath) {
     const element = document.getElementById(elementId);
     if (!element) return;
     if (element.tagName === 'VIDEO') {
