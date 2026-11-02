@@ -10,7 +10,7 @@ let selectedCharKey = 'mogu';
 let currentShopCategory = 'veg';
 let inventory = { apple: 1, milk: 1, carrot: 1 };
 
-// Mini Game Variables
+// Mini Catch Game Variables
 let gameInterval = null;
 let itemSpawnerTimer = null;
 let gameTimerSeconds = 30;
@@ -18,10 +18,69 @@ let gameScore = 0;
 let playerXPos = 50;
 let targetXPos = 50;
 let playerMoveSpeed = 3.5;
-let playerScale = 1.0; // Mini game အတွင်း character အရွယ်အစား ကြီး/သေး ပြောင်းရန် variable
+let playerScale = 1.0;
 let moveDirection = 0;
 let activeFallingItems = [];
 let isGameRunning = false;
+let animationFrameId = null;
+
+// Quiz Variables
+let quizQuestions = [
+    {
+        emoji: "🥕",
+        question: { ja: "にんじんは なにに いいかな？", my: "မုန်လာဥနီက ဘာအတွက် ကောင်းတာလဲ။" },
+        correct: { ja: "目 (め)", my: "မျက်စိ" },
+        decoys: [
+            { ja: "骨 (ほね)", my: "အရိုး" },
+            { ja: "心臓 (しんぞう)", my: "နှလုံး" }
+        ],
+        explain: { ja: "にんじんには 目を よくする えいようが あるよ！", my: "မုန်လာဥနီမှာ မျက်စိအားကောင်းစေတဲ့ အာဟာရ ပါပါတယ်!" }
+    },
+    {
+        emoji: "🥛",
+        question: { ja: "ぎゅうにゅうは なにを つ強くする？", my: "နွားနို့က ဘာကို သန်မာစေတာလဲ။" },
+        correct: { ja: "骨 (ほね)", my: "အရိုး" },
+        decoys: [
+            { ja: "髪の毛 (かみのけ)", my: "ဆံပင်" },
+            { ja: "爪 (つめ)", my: "လက်သည်း" }
+        ],
+        explain: { ja: "ぎゅうにゅうの カルシウムは ほねを つよくするよ！", my: "နွားနို့မှာ ပါတဲ့ ကယ်လ်ဆီယမ်က အရိုးတွေကို သန်မာစေပါတယ်!" }
+    },
+    {
+        emoji: "🐟",
+        question: { ja: "さかなは どこに いいかな？", my: "ငါးစားရင် ဘာအတွက် ကောင်းတာလဲ။" },
+        correct: { ja: "頭 (あたま)", my: "ဦးနှောက်" },
+        decoys: [
+            { ja: "おなか", my: "ဝမ်းဗိုက်" },
+            { ja: "足 (あし)", my: "ခြေထောက်" }
+        ],
+        explain: { ja: "さかなには あたまを よくする えいようが あるよ！", my: "ငါးမှာ ဦးနှောက် ဖွံ့ဖြိုးစေတဲ့ အာဟာရဓာတ် ပါပါတယ်!" }
+    },
+    {
+        emoji: "🥦",
+        question: { ja: "ブロッコリーは なにを するかな？", my: "ပန်းပွင့်စိမ်းက ဘာလုပ်ပေးတာလဲ။" },
+        correct: { ja: "からだを まもる", my: "ခုခံအား တိုးစေတယ်" },
+        decoys: [
+            { ja: "ねむくなる", my: "အိပ်ချင်စေတယ်" },
+            { ja: "ふとる", my: "ဝစေတယ်" }
+        ],
+        explain: { ja: "ブロッコリーは ビタミンで からだを まもるよ！", my: "ပန်းပွင့်စိမ်းမှာ ပါတဲ့ ဗီတာမင်က ခန္ဓာကိုယ် ကိုယ်ခံအား တိုးစေပါတယ်!" }
+    },
+    {
+        emoji: "🍩",
+        question: { ja: "ドーナツを たべすぎると どうなる？", my: "ဒိုးနတ် အများကြီးစားရင် ဘာဖြစ်မလဲ။" },
+        correct: { ja: "むしばに なりやすい", my: "သွားဆွေးလွယ်တယ်" },
+        decoys: [
+            { ja: "背が たかくなる", my: "အရပ်ရှည်လာမယ်" },
+            { ja: "目が よく trailhead", my: "မျက်စိ အားကောင်းမယ်" }
+        ],
+        explain: { ja: "ドーナツは さとうが おおいから たべすぎに ちゅうい！", my: "ဒိုးနတ်မှာ သကြားဓာတ် များလို့ အများကြီး မစားသင့်ပါဘူး!" }
+    }
+];
+
+let currentQuizIndex = 0;
+let quizScore = 0;
+let isQuizActive = false;
 let pendingNavButton = null;
 
 function showNotification(message, type = 'toast-success') {
@@ -49,7 +108,7 @@ function playPopSound(freq = 400) {
         osc.start();
         osc.stop(audioCtx.currentTime + 0.1);
         setTimeout(() => audioCtx.close(), 250);
-    } catch (e) { }
+    } catch (e) {}
 }
 
 function getStageMediaPath(avatarPath) {
@@ -80,7 +139,7 @@ function setVideoSource(video, avatarPath, fallbackImage = 'img/moguidle.png') {
     video.playsInline = true;
     video.load();
     const playPromise = video.play();
-    if (playPromise && playPromise.catch) playPromise.catch(() => { });
+    if (playPromise && playPromise.catch) playPromise.catch(() => {});
 }
 
 function interactCharacter() {
@@ -150,7 +209,7 @@ function selectCharacter(key) {
 function switchTab(screenId, btnElement) {
     playPopSound(500);
     if (isGameRunning) stopCatchGameLoop();
-    ['mainScreen', 'catchGameScreen', 'shopScreen', 'mypageScreen'].forEach(id => {
+    ['mainScreen', 'catchGameScreen', 'quizScreen', 'shopScreen', 'mypageScreen'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
     });
@@ -167,49 +226,177 @@ function switchTab(screenId, btnElement) {
     }
 }
 
+// Quiz Modal Logic
 function openGameEntryModal(btnElement) {
     playPopSound(500);
     pendingNavButton = btnElement;
     document.getElementById('gameEntryModal').classList.add('show');
 }
+
 function closeGameEntryModal() {
     playPopSound(300);
     document.getElementById('gameEntryModal').classList.remove('show');
     pendingNavButton = null;
 }
-function confirmAndStartCatchGame() {
+
+function confirmAndStartQuiz() {
     closeGameEntryModal();
+    playPopSound(700);
+
+    if (pendingNavButton) {
+        document.querySelectorAll('.game-nav-item').forEach(item => item.classList.remove('active'));
+        pendingNavButton.classList.add('active');
+    }
+
+    ['mainScreen', 'catchGameScreen', 'quizScreen', 'shopScreen', 'mypageScreen'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+    document.getElementById('quizScreen').classList.remove('hidden');
+
+    startQuizGame();
+}
+
+// Mini Game Modal Logic
+function openMiniGameModal(btnElement) {
+    playPopSound(500);
+    pendingNavButton = btnElement;
+    document.getElementById('miniGameEntryModal').classList.add('show');
+}
+
+function closeMiniGameEntryModal() {
+    playPopSound(300);
+    document.getElementById('miniGameEntryModal').classList.remove('show');
+    pendingNavButton = null;
+}
+
+function confirmAndStartCatchGame() {
+    closeMiniGameEntryModal();
+
     if (coins < 100) {
         playPopSound(200);
         showNotification(translations[currentLang].msgNotEnoughCoinGame, 'toast-error');
         return;
     }
+
     coins -= 100;
     updateUI();
     playPopSound(700);
+
     if (pendingNavButton) {
         document.querySelectorAll('.game-nav-item').forEach(item => item.classList.remove('active'));
         pendingNavButton.classList.add('active');
     }
-    ['mainScreen', 'catchGameScreen', 'shopScreen', 'mypageScreen'].forEach(id => {
+
+    ['mainScreen', 'catchGameScreen', 'quizScreen', 'shopScreen', 'mypageScreen'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.add('hidden');
     });
     document.getElementById('catchGameScreen').classList.remove('hidden');
+
     startCatchGameEngine();
 }
 
+// --- QUIZ ENGINE ---
+function startQuizGame() {
+    isQuizActive = true;
+    currentQuizIndex = 0;
+    quizScore = 0;
+    quizQuestions.sort(() => Math.random() - 0.5);
+    loadQuizQuestion();
+}
+
+function loadQuizQuestion() {
+    if (currentQuizIndex >= quizQuestions.length) {
+        endQuizGame();
+        return;
+    }
+
+    const q = quizQuestions[currentQuizIndex];
+    document.getElementById('quizProgressText').innerText = `${currentQuizIndex + 1} / ${quizQuestions.length}`;
+    document.getElementById('quizImageContainer').innerText = q.emoji;
+    document.getElementById('quizQuestionText').innerText = q.question[currentLang];
+
+    let options = [
+        { text: q.correct[currentLang], isCorrect: true },
+        { text: q.decoys[0][currentLang], isCorrect: false },
+        { text: q.decoys[1][currentLang], isCorrect: false }
+    ];
+    options.sort(() => Math.random() - 0.5);
+
+    const optionsContainer = document.getElementById('quizOptionsContainer');
+    optionsContainer.innerHTML = '';
+    options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'game-btn btn-secondary';
+        btn.style.margin = '4px 0';
+        btn.innerText = opt.text;
+        btn.onclick = () => handleQuizAnswer(opt.isCorrect, q);
+        optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById('quizExplanationBox').classList.add('hidden');
+}
+
+function handleQuizAnswer(isCorrect, q) {
+    const optionsContainer = document.getElementById('quizOptionsContainer');
+    const buttons = optionsContainer.querySelectorAll('button');
+    buttons.forEach(b => b.disabled = true);
+
+    const expBox = document.getElementById('quizExplanationBox');
+    const resTitle = document.getElementById('quizResultTitle');
+    const expText = document.getElementById('quizExplanationText');
+
+    if (isCorrect) {
+        playPopSound(900);
+        quizScore++;
+        expBox.classList.add('hidden');
+        setTimeout(() => {
+            if (isQuizActive) nextQuizQuestion();
+        }, 500);
+    } else {
+        playPopSound(200);
+        expBox.classList.remove('hidden');
+        resTitle.innerText = currentLang === 'ja' ? `❌ ざんねん！ (せいかい: ${q.correct[currentLang]})` : `❌ အဖြေမှားပါသည်! (အဖြေမှန်: ${q.correct[currentLang]})`;
+        resTitle.style.color = "#be123c";
+        expText.innerText = q.explain[currentLang];
+    }
+}
+
+function nextQuizQuestion() {
+    currentQuizIndex++;
+    loadQuizQuestion();
+}
+
+function endQuizGame() {
+    isQuizActive = false;
+    let earnedCoins = 50;
+    coins += earnedCoins;
+    updateUI();
+
+    document.getElementById('modalResultBadge').innerText = "🎉 Quiz クリア！";
+    document.getElementById('modalScoreTitle').innerText = `スコア: ${quizScore} / ${quizQuestions.length}`;
+    document.getElementById('modalRewardDesc').innerText = currentLang === 'ja' ? `🪙 +${earnedCoins} コインを もらったよ！` : `🪙 +${earnedCoins} Coin ရရှိပါပြီ!`;
+    document.getElementById('gameResultModal').classList.add('show');
+}
+
+// --- MINI CATCH GAME ENGINE ---
 function startCatchGameEngine() {
+    stopCatchGameLoop();
     isGameRunning = true;
     gameScore = 0;
     gameTimerSeconds = 30;
     playerMoveSpeed = 3.5;
-    playerScale = 1.0; // ဂိမ်းစတင်ချိန်တွင် အရွယ်အစား မူလအတိုင်းထားမည်
-    updatePlayerScale();
-
-    playerXPos = targetXPos = 50;
+    playerScale = 1.0;
+    playerXPos = 50;
+    targetXPos = 50;
     moveDirection = 0;
-    activeFallingItems.forEach(it => it.element.remove());
+
+    const canvasArea = document.getElementById('gameCanvasArea');
+    if (canvasArea) {
+        const oldItems = canvasArea.querySelectorAll('.falling-item');
+        oldItems.forEach(el => el.remove());
+    }
     activeFallingItems = [];
 
     const charInfo = charactersData[selectedCharKey];
@@ -221,25 +408,25 @@ function startCatchGameEngine() {
         gameAvatar.src = currentStage.avatar;
     }
 
+    updatePlayerScale();
     document.getElementById('gameScoreText').innerText = `スコア: ${gameScore}`;
     document.getElementById('gameTimerText').innerText = `${gameTimerSeconds}秒`;
 
-    clearInterval(gameInterval);
-    clearInterval(itemSpawnerTimer);
     gameInterval = setInterval(() => {
         gameTimerSeconds--;
         document.getElementById('gameTimerText').innerText = `${gameTimerSeconds}秒`;
         if (gameTimerSeconds <= 0) endCatchGame();
     }, 1000);
+
     itemSpawnerTimer = setInterval(spawnFallingItem, 400);
-    requestAnimationFrame(updateGameLoop);
+    animationFrameId = requestAnimationFrame(updateGameLoop);
     setupSmoothControls();
 }
 
-// Mogu-chan ၏ Mini game အတွင်း scale အတိုးအလျော့ကို ထိန်းချုပ်ပေးသော function
 function updatePlayerScale() {
     const basket = document.getElementById('playerBasket');
     if (basket) {
+        basket.style.left = playerXPos + '%';
         basket.style.transform = `translateX(-50%) scale(${playerScale})`;
     }
 }
@@ -247,12 +434,14 @@ function updatePlayerScale() {
 function setupSmoothControls() {
     const canvasArea = document.getElementById('gameCanvasArea');
     if (!canvasArea) return;
+
     const updateTargetFromClientX = clientX => {
         if (!isGameRunning) return;
         const rect = canvasArea.getBoundingClientRect();
         let percent = ((clientX - rect.left) / rect.width) * 100;
         targetXPos = Math.max(5, Math.min(95, percent));
     };
+
     canvasArea.onmousemove = e => updateTargetFromClientX(e.clientX);
     canvasArea.ontouchmove = e => {
         if (e.touches.length > 0) updateTargetFromClientX(e.touches[0].clientX);
@@ -269,103 +458,108 @@ function spawnFallingItem() {
     if (!isGameRunning) return;
     const canvasArea = document.getElementById('gameCanvasArea');
     if (!canvasArea) return;
+
     const foodKeys = Object.keys(foodsData);
     const food = foodsData[foodKeys[Math.floor(Math.random() * foodKeys.length)]];
     const el = document.createElement('div');
     el.className = 'falling-item';
     el.innerText = food.emoji;
+    
     const startX = Math.random() * 85 + 5;
     el.style.left = startX + '%';
     el.style.top = '-40px';
     canvasArea.appendChild(el);
+
     activeFallingItems.push({
-        element: el, x: startX, y: -40,
-        speed: Math.random() * 1.5 + 2.2,
-        isJunk: food.isJunk, emoji: food.emoji
+        element: el,
+        x: startX,
+        y: -40,
+        speed: Math.random() * 1.5 + 2.5,
+        isJunk: food.isJunk,
+        emoji: food.emoji
     });
 }
 
 function updateGameLoop() {
     if (!isGameRunning) return;
+
     const canvasArea = document.getElementById('gameCanvasArea');
-    const basket = document.getElementById('playerBasket');
-    if (!canvasArea || !basket) return;
+    if (!canvasArea) return;
 
     if (moveDirection !== 0) {
-        targetXPos = Math.max(5, Math.min(95, targetXPos + moveDirection * playerMoveSpeed * 2.5));
+        targetXPos = Math.max(5, Math.min(95, targetXPos + moveDirection * playerMoveSpeed * 1.2));
     }
-    playerXPos += (targetXPos - playerXPos) * 0.25;
-    basket.style.left = playerXPos + '%';
 
-    const canvasHeight = canvasArea.clientHeight;
+    playerXPos += (targetXPos - playerXPos) * 0.25;
+    updatePlayerScale();
+
+    const canvasHeight = canvasArea.clientHeight || 350;
+
     for (let i = activeFallingItems.length - 1; i >= 0; i--) {
         const item = activeFallingItems[i];
         item.y += item.speed;
         item.element.style.top = item.y + 'px';
-        if (item.y >= canvasHeight - 110 && item.y <= canvasHeight - 40 &&
-            Math.abs(item.x - playerXPos) < 14) {
-            playPopSound(item.isJunk ? 200 : 900);
-            showFloatingEffect(item.x, item.y, item.isJunk ? '-5 🛑' : '+10 ✨',
-                item.isJunk ? '#f43f5e' : '#22c55e');
 
-            if (item.isJunk) {
-                playerMoveSpeed = Math.max(0.4, playerMoveSpeed - 0.8);
-                playerScale = Math.max(0.5, playerScale - 0.2); // Junk food စားမိလျှင် ပိုသေးသွားမည်
-                gameScore = Math.max(0, gameScore - 5);
-            } else {
-                // Healthy food စားမိလျှင် အများကြီး ပိုကြီးလာမည် (scale ကို 0.35 စီတိုးပြီး အများဆုံး 2.5 ထိ ကြီးနိုင်သည်)
-                playerScale = Math.min(2.5, playerScale + 0.35);
-                gameScore += 10;
+        if (item.y >= canvasHeight - 100 && item.y <= canvasHeight - 30) {
+            if (Math.abs(item.x - playerXPos) < (15 * playerScale)) {
+                playPopSound(item.isJunk ? 200 : 900);
+                
+                if (item.isJunk) {
+                    playerMoveSpeed = Math.max(0.5, playerMoveSpeed - 0.5);
+                    playerScale = Math.max(0.5, playerScale - 0.2);
+                    gameScore = Math.max(0, gameScore - 5);
+                } else {
+                    playerScale = Math.min(2.5, playerScale + 0.35);
+                    gameScore += 10;
+                }
+                
+                document.getElementById('gameScoreText').innerText = `スコア: ${gameScore}`;
+                item.element.remove();
+                activeFallingItems.splice(i, 1);
+                continue;
             }
-
-            updatePlayerScale(); // အရွယ်အစားပြောင်းလဲမှုကို Screen ပေါ်တွင် ပုံဖော်ပေးမည်
-
-            document.getElementById('gameScoreText').innerText = `スコア: ${gameScore}`;
-            item.element.remove();
-            activeFallingItems.splice(i, 1);
-            continue;
         }
+
         if (item.y > canvasHeight) {
             item.element.remove();
             activeFallingItems.splice(i, 1);
         }
     }
-    if (isGameRunning) requestAnimationFrame(updateGameLoop);
-}
 
-function showFloatingEffect(xPercent, yPos, text, colorHex) {
-    const canvasArea = document.getElementById('gameCanvasArea');
-    if (!canvasArea) return;
-    const fx = document.createElement('div');
-    fx.className = 'floating-effect';
-    fx.innerText = text;
-    fx.style.left = xPercent + '%';
-    fx.style.top = yPos + 'px';
-    fx.style.color = colorHex;
-    canvasArea.appendChild(fx);
-    setTimeout(() => fx.remove(), 600);
+    if (isGameRunning) {
+        animationFrameId = requestAnimationFrame(updateGameLoop);
+    }
 }
 
 function stopCatchGameLoop() {
     isGameRunning = false;
-    clearInterval(gameInterval);
-    clearInterval(itemSpawnerTimer);
-    activeFallingItems.forEach(it => it.element.remove());
+    if (gameInterval) clearInterval(gameInterval);
+    if (itemSpawnerTimer) clearInterval(itemSpawnerTimer);
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+    activeFallingItems.forEach(it => {
+        if (it.element) it.element.remove();
+    });
     activeFallingItems = [];
 }
+
 function exitCatchGame() {
     stopCatchGameLoop();
     switchTab('mainScreen', document.querySelectorAll('.game-nav-item')[0]);
 }
+
 function endCatchGame() {
     stopCatchGameLoop();
-    const earnedGems = Math.floor(gameScore / 30) + 1;
+    let earnedGems = Math.floor(gameScore / 30) + 1;
     gems += earnedGems;
-    document.getElementById('modalScoreTitle').innerText = `スコア: ${gameScore}`;
-    document.getElementById('modalRewardDesc').innerText = `💎 +${earnedGems} Diamond ရရှိပါပြီ!`;
-    document.getElementById('gameResultModal').classList.add('show');
     updateUI();
+
+    document.getElementById('modalResultBadge').innerText = "🎉 ゲーム クリア！";
+    document.getElementById('modalScoreTitle').innerText = `スコア: ${gameScore}`;
+    document.getElementById('modalRewardDesc').innerText = currentLang === 'ja' ? `💎 +${earnedGems} ダイヤを もらったよ！` : `💎 +${earnedGems} Diamond ရရှိပါပြီ!`;
+    document.getElementById('gameResultModal').classList.add('show');
 }
+
 function closeGameResultModal() {
     document.getElementById('gameResultModal').classList.remove('show');
     switchTab('mainScreen', document.querySelectorAll('.game-nav-item')[0]);
@@ -378,6 +572,7 @@ function switchShopCategory(catKey, btnElem) {
     if (btnElem) btnElem.classList.add('active');
     renderShop();
 }
+
 function renderShop() {
     const container = document.getElementById('shopContainer');
     if (!container) return;
@@ -399,6 +594,7 @@ function renderShop() {
             </div>`;
     });
 }
+
 function buyFood(foodKey) {
     const food = foodsData[foodKey];
     if (coins >= food.price) {
@@ -412,6 +608,7 @@ function buyFood(foodKey) {
         showNotification(translations[currentLang].msgNoCoin, 'toast-error');
     }
 }
+
 function feedFood(foodKey) {
     if ((inventory[foodKey] || 0) > 0) {
         inventory[foodKey]--;
@@ -427,6 +624,7 @@ function feedFood(foodKey) {
         updateUI();
     }
 }
+
 function renderMyPageGuides() {
     const container = document.getElementById('guideContainer');
     if (!container) return;
@@ -439,21 +637,40 @@ function renderMyPageGuides() {
             <div class="shelf-item" onclick="showFoodModal('${key}')">${mediaHTML}</div>`;
     });
 }
+
 function showFoodModal(foodKey) {
-    const food = foodsData[key];
+    const food = foodsData[foodKey];
+    if (!food) return;
+
     const modalMediaContainer = document.getElementById('modalEmoji');
-    if (!modalMediaContainer) return;
-    if (food.emoji && food.emoji.includes('/')) {
-        modalMediaContainer.innerHTML = `<img src="${food.emoji}" style="width:80px;height:80px;object-fit:contain;" alt="">`;
-    } else modalMediaContainer.innerText = food.emoji;
-    document.getElementById('modalName').innerText = food.name[currentLang];
-    document.getElementById('modalDesc').innerText = food.desc[currentLang];
+    if (modalMediaContainer) {
+        if (food.emoji && food.emoji.includes('/')) {
+            modalMediaContainer.innerHTML = `<img src="${food.emoji}" style="width:80px;height:80px;object-fit:contain;" alt="">`;
+        } else {
+            modalMediaContainer.innerText = food.emoji;
+        }
+    }
+
+    const modalName = document.getElementById('modalName');
+    if (modalName) modalName.innerText = food.name[currentLang];
+
+    const modalDesc = document.getElementById('modalDesc');
+    if (modalDesc) {
+        if (food.isJunk) {
+            modalDesc.innerHTML = `<span style="color:#e11d48; font-weight:800;">⚠️ Junk Food</span><br>${food.desc[currentLang]}`;
+        } else {
+            modalDesc.innerHTML = `<span style="color:#16a34a; font-weight:800;">✨ Healthy Food</span><br>${food.desc[currentLang]}`;
+        }
+    }
+
     document.getElementById('foodInfoModal').classList.add('show');
 }
+
 function closeFoodModal() {
     const modal = document.getElementById('foodInfoModal');
     if (modal) modal.classList.remove('show');
 }
+
 function closeFoodModalOnOutside(event) {
     const modalCard = document.querySelector('#foodInfoModal .game-modal-card');
     if (modalCard && !modalCard.contains(event.target)) closeFoodModal();
